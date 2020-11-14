@@ -1,25 +1,25 @@
 from django.shortcuts import render
-from . import bin2real
 import plotly.express as px
-
-from ctypes import LittleEndianStructure, c_uint, c_ushort
-class SampleBin(LittleEndianStructure):
-    """
-    Define your structure here
-    """
-    _fields_ = [
-        ('use22bits', c_uint, 22),
-        ('use10bits', c_uint, 10),
-
-        ('', c_ushort, 7),
-        ('use2bits', c_ushort, 2),
-        ('', c_ushort, 4),
-        ('use3bits', c_ushort, 3),
-    ]
+from ctypes import c_uint16, c_uint32
+from . import bin2real
 
 # Create your views here.
 def plot(request):
-    sts = bin2real.read_bin_dict('graph/sample.bin', 6, SampleBin)
+
+    # Make binary structure
+    bs = bin2real.CustomBinStructure()
+    bs.add_field('use22bits', c_uint32, 22)
+    bs.add_field('use10bits', c_uint32, 10)
+    bs.add_field('', c_uint16, 7)
+    bs.add_field('use2bits', c_uint16, 2)
+    bs.add_field('', c_uint16, 4)
+    bs.add_field('use3bits', c_uint16, 3)
+    bs.make_binstructure()
+
+    # Read sample file
+    sts = bs.read_bin_to_dict('graph/sample.bin')
+
+    # Plot
     fig = px.scatter(x=sts['use22bits'], y=sts['use2bits'])
-    plot_dev = fig.to_html(full_html=False)
-    return render(request, 'graph/plot.html', {'plot_dev': plot_dev})
+    plot_div = fig.to_html(full_html=False)
+    return render(request, 'graph/plot.html', {'plot_div': plot_div})
