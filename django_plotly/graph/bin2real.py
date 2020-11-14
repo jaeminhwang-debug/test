@@ -4,10 +4,30 @@ from ctypes import sizeof
 
 class CustomBinStructure:
     def __init__(self):
-        self._fields = [] 
+        self._fields = []
+        self._fields_buf = []
 
-    def add_field(self, name, ctype, bits):
-        self._fields.append((name, ctype, bits))
+    def clear_field(self):
+        self._fields.clear()
+        self._fields_buf.clear()
+
+    def add_field(self, name, bits):
+        self._fields_buf.append((name, bits))
+        bits_sum = sum([field[1] for field in self._fields_buf])
+        if bits_sum == 8:
+            ctype = c_uint8
+        elif bits_sum == 16:
+            ctype = c_uint16
+        elif bits_sum == 32:
+            ctype = c_uint32
+        elif bits_sum == 64:
+            ctype = c_uint64
+        else:
+            ctype = int
+        if ctype != int:
+            for field in self._fields_buf:
+                self._fields.append((field[0], ctype, field[1])) 
+            self._fields_buf.clear()
 
     def make_binstructure(self):
         class BinStructure(LittleEndianStructure):
@@ -59,14 +79,20 @@ class CustomBinStructure:
 
 if __name__ == '__main__':
 
+    """
+    Below example structure (Little Endian)
+    |LSB                                                 MSB|
+    |0      21|22     31|32    38|39    40|41    44|45    47|
+    |use22bits|use10bits|not used|use2bits|not used|use3bits|
+    """
     # Set your binary structure here
     bs = CustomBinStructure()
-    bs.add_field('use22bits', c_uint32, 22)
-    bs.add_field('use10bits', c_uint32, 10)
-    bs.add_field('', c_uint16, 7)
-    bs.add_field('use2bits', c_uint16, 2)
-    bs.add_field('', c_uint16, 4)
-    bs.add_field('use3bits', c_uint16, 3)
+    bs.add_field('use22bits', 22)
+    bs.add_field('use10bits', 10)
+    bs.add_field('', 7)
+    bs.add_field('use2bits', 2)
+    bs.add_field('', 4)
+    bs.add_field('use3bits', 3)
     bs.make_binstructure()
 
     # Read a binary file
