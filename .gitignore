@@ -13,3 +13,4 @@ django_plotly/django_plotly/__pycache__/settings.cpython-39.pyc
 django_plotly/django_plotly/__pycache__/__init__.cpython-39.pyc
 django_plotly/db.sqlite3
 .vscode/settings.json
+django_plotly/graph/__pycache__/forms.cpython-39.pyc

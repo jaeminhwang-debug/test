@@ -11,7 +11,7 @@ class CustomBinStructure:
         self._fields.clear()
         self._fields_buf.clear()
 
-    def add_field(self, name, bits):
+    def append_field(self, name, bits):
         self._fields_buf.append((name, bits))
         bits_sum = sum([field[1] for field in self._fields_buf])
         if bits_sum == 8:
@@ -87,12 +87,12 @@ if __name__ == '__main__':
     """
     # Set your binary structure here
     bs = CustomBinStructure()
-    bs.add_field('use22bits', 22)
-    bs.add_field('use10bits', 10)
-    bs.add_field('', 7)
-    bs.add_field('use2bits', 2)
-    bs.add_field('', 4)
-    bs.add_field('use3bits', 3)
+    bs.append_field('use22bits', 22)
+    bs.append_field('use10bits', 10)
+    bs.append_field('', 7)
+    bs.append_field('use2bits', 2)
+    bs.append_field('', 4)
+    bs.append_field('use3bits', 3)
     bs.make_binstructure()
 
     # Read a binary file
