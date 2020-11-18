@@ -11,8 +11,8 @@ class CustomBinStructure:
         self._fields.clear()
         self._fields_buf.clear()
 
-    def append_field(self, name, bits):
-        self._fields_buf.append((name, bits))
+    def append_field(self, label, bits):
+        self._fields_buf.append((label, bits))
         bits_sum = sum([field[1] for field in self._fields_buf])
         if bits_sum == 8:
             ctype = c_uint8
@@ -61,7 +61,7 @@ class CustomBinStructure:
         buf = f.read()
         f.close()
 
-        # Prepare return dictionary(key: field name, value: value list)
+        # Prepare return dictionary(key: field label, value: value list)
         res = {}
         for field in self._ctype._fields_:
             res[field[0]] = []
