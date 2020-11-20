@@ -1,46 +1,66 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import plotly.express as px
-from .bin2real import CustomBinStructure
-from .forms import get_binfield_formset
+from .bin2real import *
+from .forms import *
 
 # Create your views here.
-def define_structure(request):
+def structure_list(request):
     if request.method == 'POST':
-        if 'submit_add' in request.POST:
-            response = _append_form(request)
-        elif 'submit_save' in request.POST:
-            response = _save_formset(request)
+        if 'submit_new' in request.POST:
+            response = redirect('field_list')
         else:
             response = HttpResponse('Undefined')
     else:
-        formset = get_binfield_formset()
-        response = render(request, 'graph/define_structure.html', {'formset': formset})
+        bs_formset = get_binstructure_formset()
+        response = render(request, 'graph/structure.html', {'bs_formset': bs_formset})
     return response
 
-def _append_form(request):
-    formset = get_binfield_formset(data=request.POST)
-    if formset.is_valid():
-
-        # Keep values from current forms
-        values = []
-        for form in formset:
-            try:
-                values.append({'label': form.cleaned_data['label'],
-                               'bits': form.cleaned_data['bits']})
-            except KeyError:
-                values.append({'label': '', 'bits': None})
-
-        # Get a new formset which have one more extra form
-        new_formset = get_binfield_formset(initial=values, extra=len(values) + 1)
+def field_list(request):
+    if request.method == 'POST':
+        if 'submit_add' in request.POST:
+            response = _append_field_form(request)
+        elif 'submit_save' in request.POST:
+            response = _save_field_formset(request)
+        else:
+            response = HttpResponse('Undefined')
     else:
-        new_formset = formset
-    return render(request, 'graph/define_structure.html', {'formset': new_formset})
+        bs_form = BinStructureForm()
+        bf_formset = get_binfield_formset()
+        response = render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': bf_formset})
+    return response
 
-def _save_formset(request):
-    formset = get_binfield_formset(data=request.POST)
-    formset.save()
-    return HttpResponse('Save')
+def _append_field_form(request):
+
+    # Keep current name and fields, then append one more extra field
+    bs_form = BinStructureForm(data=request.POST)
+    bf_formset = get_binfield_formset(data=request.POST)
+    bf_formset.full_clean() # To access to form.cleaned_data
+    values = []
+    for form in bf_formset:
+        try:
+            label = form.cleaned_data['label']
+        except KeyError:
+            label = ''
+        try:
+            bits = form.cleaned_data['bits']
+        except KeyError:
+            bits = None
+        values.append({'label': label, 'bits': bits})
+    new_bf_formset = get_binfield_formset(initial=values, extra=len(values) + 1)
+    
+    return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': new_bf_formset})
+
+def _save_field_formset(request):
+    bs_form = BinStructureForm(data=request.POST)
+    if bs_form.is_valid():
+        bf_formset = get_binfield_formset(data=request.POST)
+        if bf_formset.is_valid():
+            model = bs_form.save()
+            for form in bf_formset:
+                form.instance.bin_structure = model
+            bf_formset.save()
+    return HttpResponse('Saved')
 
 def plot(request):
 

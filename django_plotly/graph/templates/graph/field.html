@@ -2,16 +2,18 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Graph: Structure</title>
+        <title>Graph: Field</title>
     </head>
     <body>
         <form action="" method="post">
             {% csrf_token %}
             <input type="submit" name="submit_add" value="Add">
             <input type="submit" name="submit_save" value="Save">
-            {{ formset.management_form }}
+            <br>
+            {{ bs_form }}
+            {{ bf_formset.management_form }}
             <ol>
-                {% for form in formset %}
+                {% for form in bf_formset %}
                 <li>{{ form }}</li>
                 {% endfor %}
             </ol>

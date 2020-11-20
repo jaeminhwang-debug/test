@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Graph: Structure</title>
+    </head>
+    <body>
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="submit" name="submit_new" value="New">
+            {{ formset.management_form }}
+            <ol>
+                {% for form in formset %}
+                <li>{{ form }}</li>
+                {% endfor %}
+            </ol>
+        </form>
+    </body>
+</html>
