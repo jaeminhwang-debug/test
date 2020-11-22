@@ -1,12 +1,22 @@
 from django.db import models
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 # Create your models here.
 class BinStructure(models.Model):
-    name = models.CharField(max_length=256, blank=True)
+    name = models.CharField(max_length=256)
+    created = models.DateTimeField(blank=True)
+    modified = models.DateTimeField(blank=True)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = self.modified = timezone.now()
+        else:
+            self.modified = timezone.now()
+        return super().save(*args, **kwargs)
 
 class BinField(models.Model):
     bs = models.ForeignKey(BinStructure, on_delete=models.CASCADE)

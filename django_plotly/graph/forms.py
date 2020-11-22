@@ -19,7 +19,7 @@ def get_binfield_from_binstructure(bs_id):
 class BinStructureForm(forms.ModelForm):
     class Meta:
         model = BinStructure
-        fields = ['name']
+        fields = ['name', 'created', 'modified']
 
 class SelectBinStructureForm(forms.Form):
     bs = forms.ModelChoiceField(queryset=BinStructure.objects.all(), 

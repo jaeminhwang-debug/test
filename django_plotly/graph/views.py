@@ -53,14 +53,16 @@ def _append_field_form(request):
 
 def _save_field_formset(request):
     bs_form = BinStructureForm(data=request.POST)
-    if bs_form.is_valid():
-        bf_formset = get_binfield_formset(data=request.POST)
-        if bf_formset.is_valid():
-            model = bs_form.save()
-            for form in bf_formset:
-                form.instance.bs = model
-            bf_formset.save()
-    return HttpResponse('Saved')
+    bf_formset = get_binfield_formset(data=request.POST)
+    if bs_form.is_valid() and bf_formset.is_valid():
+        bs = bs_form.save()
+        for form in bf_formset:
+            form.instance.bs = bs
+        bf_formset.save()
+        response = HttpResponse('Saved')
+    else:
+        response = HttpResponse('Invalid')
+    return response
 
 def plot(request):
     if request.method == 'POST':
