@@ -8,12 +8,11 @@
         <form action="" method="post">
             {% csrf_token %}
             <input type="submit" name="submit_new" value="New">
-            {{ formset.management_form }}
-            <ol>
-                {% for form in formset %}
-                <li>{{ form }}</li>
-                {% endfor %}
-            </ol>
+            {{ bs_formset.management_form }}
+			{% for form in bs_formset %}
+			<br>
+			<a href="{{ form.id.value }}/field/">{{ form.name.value }}</a>
+			{% endfor %}
         </form>
     </body>
 </html>

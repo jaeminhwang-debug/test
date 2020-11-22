@@ -6,10 +6,10 @@ class BinStructure(models.Model):
     name = models.CharField(max_length=256, blank=True)
 
     def __str__(self):
-        return "<BinStructure> name: '" + self.name + "'"
+        return self.name
 
 class BinField(models.Model):
-    bin_structure = models.ForeignKey(BinStructure, on_delete=models.CASCADE)
+    bs = models.ForeignKey(BinStructure, on_delete=models.CASCADE)
     label = models.CharField(max_length=256, blank=True)
     bits = models.IntegerField(blank=True)
 

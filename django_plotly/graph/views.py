@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 import plotly.express as px
 from .bin2real import *
 from .forms import *
+from .models import *
 
 # Create your views here.
 def structure_list(request):
@@ -16,7 +17,7 @@ def structure_list(request):
         response = render(request, 'graph/structure.html', {'bs_formset': bs_formset})
     return response
 
-def field_list(request):
+def field_list(request, bs_id=0):
     if request.method == 'POST':
         if 'submit_add' in request.POST:
             response = _append_field_form(request)
@@ -25,8 +26,13 @@ def field_list(request):
         else:
             response = HttpResponse('Undefined')
     else:
-        bs_form = BinStructureForm()
-        bf_formset = get_binfield_formset()
+        if bs_id > 0: # Field list for the BinStructure(bs_id)
+            bs = get_object_or_404(BinStructure, pk=bs_id)
+            bs_form = BinStructureForm(instance=bs)
+            bf_formset = get_binfield_from_binstructure(bs_id)
+        else: # Empty field list
+            bs_form = BinStructureForm()
+            bf_formset = get_binfield_formset()
         response = render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': bf_formset})
     return response
 
@@ -38,14 +44,8 @@ def _append_field_form(request):
     bf_formset.full_clean() # To access to form.cleaned_data
     values = []
     for form in bf_formset:
-        try:
-            label = form.cleaned_data['label']
-        except KeyError:
-            label = ''
-        try:
-            bits = form.cleaned_data['bits']
-        except KeyError:
-            bits = None
+        label = form.cleaned_data.get('label', '')
+        bits = form.cleaned_data.get('bits', None)
         values.append({'label': label, 'bits': bits})
     new_bf_formset = get_binfield_formset(initial=values, extra=len(values) + 1)
     
@@ -58,26 +58,33 @@ def _save_field_formset(request):
         if bf_formset.is_valid():
             model = bs_form.save()
             for form in bf_formset:
-                form.instance.bin_structure = model
+                form.instance.bs = model
             bf_formset.save()
     return HttpResponse('Saved')
 
 def plot(request):
+    if request.method == 'POST':
+        sel_bs = SelectBinStructureForm(data=request.POST)
+        if sel_bs.is_valid():
 
-    # Make binary structure
-    bs = CustomBinStructure()
-    bs.append_field('use22bits', 22)
-    bs.append_field('use10bits', 10)
-    bs.append_field('', 7)
-    bs.append_field('use2bits', 2)
-    bs.append_field('', 4)
-    bs.append_field('use3bits', 3)
-    bs.make_binstructure()
+            # Make binary structure from the selected BinStructure
+            cbs = CustomBinStructure()
+            bs_name = sel_bs.cleaned_data['bs']
+            bfs = BinField.objects.filter(bs__name=bs_name)
+            for bf in bfs:
+               cbs.append_field(bf.label, bf.bits) 
+            cbs.make_binstructure()
 
-    # Read sample file
-    bs_dict = bs.read_bin_to_dict('graph/sample.bin')
+            # Read a sample file
+            cbs_dict = cbs.read_bin_to_dict('graph/sample.bin')
 
-    # Plot
-    fig = px.scatter(x=bs_dict['use22bits'], y=bs_dict['use2bits'])
-    plot_div = fig.to_html(full_html=False)
-    return render(request, 'graph/plot.html', {'plot_div': plot_div})
+            # Plot
+            fig = px.scatter(x=cbs_dict['use22bits'], y=cbs_dict['use2bits'])
+            plot_div = fig.to_html(full_html=False)
+            response = render(request, 'graph/plot.html', {'plot_div': plot_div})
+        else:
+            response = HttpResponse('post')
+    else:
+        sel_bs = SelectBinStructureForm()
+        response = render(request, 'graph/plot.html', {'sel_bs': sel_bs})
+    return response

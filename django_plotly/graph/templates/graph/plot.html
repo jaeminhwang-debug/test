@@ -5,6 +5,11 @@
         <title>Graph: Plot</title>
     </head>
     <body>
+		<form action="" method="post">
+			{% csrf_token %}
+            {{ sel_bs }}
+		</form>
+	
         <h1>TEST GRAPH</h1>
         {% if plot_div %}
         {{ plot_div|safe }}
