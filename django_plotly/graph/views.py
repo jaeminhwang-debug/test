@@ -10,12 +10,24 @@ def structure_list(request):
     if request.method == 'POST':
         if 'submit_new' in request.POST:
             response = redirect('field_list')
+        elif 'submit_del' in request.POST:
+            response = _del_structure(request)
         else:
             response = HttpResponse('Undefined')
     else:
         bs_formset = get_binstructure_formset()
         response = render(request, 'graph/structure.html', {'bs_formset': bs_formset})
     return response
+
+def _del_structure(request):
+    bs_formset = get_binstructure_formset(data=request.POST)
+    bs_formset.full_clean() # To access to form.cleaned_data
+    for form in bs_formset:
+        if form.cleaned_data['DELETE']:
+            bs = form.save(commit=False)
+            bs.delete()
+
+    return HttpResponse('Del')
 
 def field_list(request, bs_id=0):
     if request.method == 'POST':

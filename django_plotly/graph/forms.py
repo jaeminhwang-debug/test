@@ -1,9 +1,9 @@
 from django import forms
 from .models import *
 
-def get_binstructure_formset():
+def get_binstructure_formset(data=None):
     FormSetClass = forms.modelformset_factory(model=BinStructure, exclude=[], can_delete=True, extra=0)
-    return FormSetClass()
+    return FormSetClass(data=data)
 
 def get_binfield_formset(data=None, initial=None, empty=True, extra=1):
     FormSetClass = forms.modelformset_factory(model=BinField, exclude=['bs'], extra=extra)
