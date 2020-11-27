@@ -9,7 +9,7 @@ class BinStructure(models.Model):
     modified = models.DateTimeField(blank=True)
 
     def __str__(self):
-        return self.name
+        return str(self.id) + ':' + self.name
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -19,12 +19,12 @@ class BinStructure(models.Model):
         return super().save(*args, **kwargs)
 
 class BinField(models.Model):
-    bs = models.ForeignKey(BinStructure, on_delete=models.CASCADE)
+    bs = models.ForeignKey(BinStructure, on_delete=models.CASCADE, blank=True)
     label = models.CharField(max_length=256, blank=True)
     bits = models.IntegerField(blank=True)
 
     def __str__(self):
-        return "<BinField> label: '" + self.label + "', bits: " + str(self.bits)
+        return str(self.id) + ':' + self.bs.name + '.' + self.label + '(' + str(self.bits) + ')'
 
     # def clean(self):
     #     if (self.bits is None) or (self.bits < 1) or (64 < self.bits):

@@ -26,19 +26,18 @@ def _del_structure(request):
         if form.cleaned_data['DELETE']:
             bs = form.save(commit=False)
             bs.delete()
-
     return HttpResponse('Del')
 
-def field_list(request, bs_id=0):
+def field_list(request, bs_id=None):
     if request.method == 'POST':
         if 'submit_add' in request.POST:
             response = _append_field_form(request)
         elif 'submit_save' in request.POST:
-            response = _save_field_formset(request)
+            response = _save_field_formset(request, bs_id)
         else:
             response = HttpResponse('Undefined')
     else:
-        if bs_id > 0: # Field list for the BinStructure(bs_id)
+        if bs_id is not None: # Field list for the BinStructure(bs_id)
             bs = get_object_or_404(BinStructure, pk=bs_id)
             bs_form = BinStructureForm(instance=bs)
             bf_formset = get_binfield_from_binstructure(bs_id)
@@ -56,21 +55,23 @@ def _append_field_form(request):
     bf_formset.full_clean() # To access to form.cleaned_data
     values = []
     for form in bf_formset:
+        bs = form.cleaned_data.get('bs')
         label = form.cleaned_data.get('label', '')
-        bits = form.cleaned_data.get('bits', None)
-        values.append({'label': label, 'bits': bits})
+        bits = form.cleaned_data.get('bits')
+        id = form.cleaned_data.get('id')
+        values.append({'bs': bs, 'label': label, 'bits': bits, 'id': id})
     new_bf_formset = get_binfield_formset(initial=values, extra=len(values) + 1)
     
     return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': new_bf_formset})
 
-def _save_field_formset(request):
+def _save_field_formset(request, bs_id):
     bs_form = BinStructureForm(data=request.POST)
     bf_formset = get_binfield_formset(data=request.POST)
     if bs_form.is_valid() and bf_formset.is_valid():
-        bs = bs_form.save()
+        bs = bs_form.save(bs_id=bs_id)
         for form in bf_formset:
             form.instance.bs = bs
-        bf_formset.save()
+            form.save(bf=form.cleaned_data.get('id'))
         response = HttpResponse('Saved')
     else:
         response = HttpResponse('Invalid')
