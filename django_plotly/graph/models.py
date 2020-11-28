@@ -26,6 +26,6 @@ class BinField(models.Model):
     def __str__(self):
         return str(self.id) + ':' + self.bs.name + '.' + self.label + '(' + str(self.bits) + ')'
 
-    # def clean(self):
-    #     if (self.bits is None) or (self.bits < 1) or (64 < self.bits):
-    #         raise ValidationError('bits must be in 1 to 64')
+    def clean(self):
+        if (self.bits is None) or (self.bits < 1) or (64 < self.bits):
+            raise ValidationError('bits must be in 1 to 64')

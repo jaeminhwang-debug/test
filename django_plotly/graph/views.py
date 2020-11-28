@@ -40,7 +40,7 @@ def field_list(request, bs_id=None):
         if bs_id is not None: # Field list for the BinStructure(bs_id)
             bs = get_object_or_404(BinStructure, pk=bs_id)
             bs_form = BinStructureForm(instance=bs)
-            bf_formset = get_binfield_from_binstructure(bs_id)
+            bf_formset = get_binfield_formset(srctype='bs_id', src=bs_id)
         else: # Empty field list
             bs_form = BinStructureForm()
             bf_formset = get_binfield_formset()
@@ -48,30 +48,16 @@ def field_list(request, bs_id=None):
     return response
 
 def _append_field_form(request):
-
-    # Keep current name and fields, then append one more extra field
     bs_form = BinStructureForm(data=request.POST)
-    bf_formset = get_binfield_formset(data=request.POST)
-    bf_formset.full_clean() # To access to form.cleaned_data
-    values = []
-    for form in bf_formset:
-        bs = form.cleaned_data.get('bs')
-        label = form.cleaned_data.get('label', '')
-        bits = form.cleaned_data.get('bits')
-        id = form.cleaned_data.get('id')
-        values.append({'bs': bs, 'label': label, 'bits': bits, 'id': id})
-    new_bf_formset = get_binfield_formset(initial=values, extra=len(values) + 1)
-    
-    return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': new_bf_formset})
+    bf_formset = get_binfield_formset(srctype='post', src=request.POST)
+    bf_formset = get_binfield_formset(srctype='formset', src=bf_formset)
+    return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': bf_formset})
 
 def _save_field_formset(request, bs_id):
     bs_form = BinStructureForm(data=request.POST)
-    bf_formset = get_binfield_formset(data=request.POST)
-    if bs_form.is_valid() and bf_formset.is_valid():
-        bs = bs_form.save(bs_id=bs_id)
-        for form in bf_formset:
-            form.instance.bs = bs
-            form.save(bf=form.cleaned_data.get('id'))
+    bf_formset = get_binfield_formset(srctype='post', src=request.POST)
+    saved = save_binstructure_binfield_formset(bs_form=bs_form, bs_id=bs_id, bf_formset=bf_formset)
+    if saved:
         response = HttpResponse('Saved')
     else:
         response = HttpResponse('Invalid')
