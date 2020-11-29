@@ -21,17 +21,15 @@ def structure_list(request):
 
 def _del_structure(request):
     bs_formset = get_binstructure_formset(data=request.POST)
-    bs_formset.full_clean() # To access to form.cleaned_data
-    for form in bs_formset:
-        if form.cleaned_data['DELETE']:
-            bs = form.save(commit=False)
-            bs.delete()
+    delete_binstructure_formset(bs_formset=bs_formset)
     return HttpResponse('Del')
 
 def field_list(request, bs_id=None):
     if request.method == 'POST':
         if 'submit_add' in request.POST:
             response = _append_field_form(request)
+        elif 'submit_delete' in request.POST:
+            response = _delete_field_form(request)
         elif 'submit_save' in request.POST:
             response = _save_field_formset(request, bs_id)
         else:
@@ -50,7 +48,13 @@ def field_list(request, bs_id=None):
 def _append_field_form(request):
     bs_form = BinStructureForm(data=request.POST)
     bf_formset = get_binfield_formset(srctype='post', src=request.POST)
-    bf_formset = get_binfield_formset(srctype='formset', src=bf_formset)
+    bf_formset = get_binfield_formset(srctype='formset_append', src=bf_formset)
+    return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': bf_formset})
+
+def _delete_field_form(request):
+    bs_form = BinStructureForm(data=request.POST)
+    bf_formset = get_binfield_formset(srctype='post', src=request.POST)
+    bf_formset = get_binfield_formset(srctype='formset_delete', src=bf_formset)
     return render(request, 'graph/field.html', {'bs_form': bs_form, 'bf_formset': bf_formset})
 
 def _save_field_formset(request, bs_id):

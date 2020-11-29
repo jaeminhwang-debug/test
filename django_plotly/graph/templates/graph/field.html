@@ -5,7 +5,7 @@
         <title>Graph: Field</title>
     </head>
     <body>
-        <form action="" method="post">
+        <form id="main_form" action="" method="post">
             {% csrf_token %}
             <input type="submit" name="submit_add" value="Add">
             <input type="submit" name="submit_save" value="Save">
@@ -14,9 +14,30 @@
             {{ bf_formset.management_form }}
             <ol>
                 {% for form in bf_formset %}
-                <li>{{ form }}</li>
+                <li>
+                    {{ form }}
+                    <input type="button" value="-" onclick="click_delete('{{ form.delete.auto_id }}')">
+                </li>
                 {% endfor %}
             </ol>
         </form>
+
+        <script type="text/javascript">
+            function click_delete(id) {
+
+                // Set form's delete field to True
+                document.getElementById(id).setAttribute("value", "True");
+
+                // Add 'submit_delete' element into the main_form, the element is used to identify sort of request
+                var temp_del = document.createElement("input");
+                temp_del.type = "hidden";
+                temp_del.name = "submit_delete";
+                var form = document.getElementById("main_form");
+                form.appendChild(temp_del);
+
+                // Submit
+                form.submit()
+            }
+        </script>
     </body>
 </html>
