@@ -25,7 +25,7 @@ SECRET_KEY = 'gw#)-vll&olm)p0_m*q$ayj$!$mlnibu93optcsab4*k%9lp6g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.0.100']
 
 
 # Application definition
@@ -69,7 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'django_plotly.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -119,3 +118,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Media
+
+MEDIA_ROOT = 'media/'
+UPLOAD_ROOT = 'uploads/'

@@ -2,12 +2,20 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Graph: Plot</title>
+        <title>Django-Plotly: Plot</title>
     </head>
     <body>
 		<form action="" method="post">
-			{% csrf_token %}
+            {% csrf_token %}
+            {{ sel_bd }}
+            <br>
             {{ sel_bs }}
+            {{ sel_graph }}
+            <br>
+            {% for form in sel_bf_forms %}
+                {{ form }}
+            {% endfor %}
+            <input type="submit" name="submit_plot" value="Plot">
 		</form>
 	
         <h1>TEST GRAPH</h1>

@@ -2,18 +2,18 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Graph: Field</title>
+        <title>Django-Plotly: Field</title>
     </head>
     <body>
-        <form id="main_form" action="" method="post">
+        <form id="main_form" method="post" action="">
             {% csrf_token %}
             <input type="submit" name="submit_add" value="Add">
             <input type="submit" name="submit_save" value="Save">
             <br>
-            {{ bs_form.name }}
-            {{ bf_formset.management_form }}
+            {{ bs_form.label }}
+            {{ bf_fs.management_form }}
             <ol>
-                {% for form in bf_formset %}
+                {% for form in bf_fs %}
                 <li>
                     {{ form }}
                     <input type="button" value="-" onclick="click_delete('{{ form.delete.auto_id }}')">

@@ -4,28 +4,28 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Graph: Structure</title>
+        <title>Django-Plotly: Structure</title>
     </head>
     <body>
-        <form action="" method="post">
+        <form method="post" action="">
             {% csrf_token %}
             <input type="submit" name="submit_new" value="New">
             <input type="submit" name="submit_del" value="Del">
-            {{ bs_formset.management_form }}
-            {% for form in bs_formset %}
-
+            {{ bs_fs.management_form }}
+            {% for form in bs_fs %}
+                <br>
+                
                 <!-- Add hidden non-blank fields for validation -->
                 <span class='no_display'>
                 {{ form.id }}
-                {{ form.name }}
+                {{ form.label }}
                 </span>
                 
-                <br>
                 <label>Structure name: </label>
-                <a href="{{ form.id.value }}/field/">{{ form.name.value }}</a>
-                <label>Modified: {{ form.modified.value }}</label>
-                <label>Delete: </label>
-                {% if bs_formset.can_delete %}
+                <a href="{{ form.id.value }}/field/">{{ form.label.value }}</a>
+                <label>Modified: {{ form.modified.value|date:"Y-m-d H:i:s" }}</label>
+                {% if bs_fs.can_delete %}
+                    <label>Delete: </label>
                     {{ form.DELETE }}
                 {% endif %}
 			{% endfor %}

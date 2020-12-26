@@ -5,3 +5,4 @@ django_plotly/db.sqlite3
 .vscode/settings.json
 django_plotly/graph/migrations/*.*
 django_plotly/.vscode/settings.json
+django_plotly/media/uploads
