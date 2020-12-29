@@ -3,6 +3,8 @@ import ast
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
 from .bin2real import *
 from .forms import *
 from .models import *
@@ -152,26 +154,28 @@ def get_plotly_html(bs, graph_id_str, bf_ids, fpath):
     cbs.make_binstruct()
 
     # Read the selected file
-    print(fpath)
     data = cbs.read_bin_to_dict(fpath)
+    df = pd.DataFrame.from_dict(data)
 
-    # Get field labels from the bf_ids
-    labels = []
+    # Get field fields from the bf_ids
+    fls = []
     for bf_id in bf_ids:
-        labels.append(get_binfield_label(bf_id))
+        fls.append(get_binfield_label(bf_id))
 
     # Plot
     fig = None
     if graph_id_str == SelectGraphForm.SCATTER:
-        fig = px.scatter(x=data[labels[0]], y=data[labels[1]])
+        fig = px.scatter(data_frame=df, x=fls[0], y=fls[1])
     elif graph_id_str == SelectGraphForm.SCATTER_3D:
-        fig = px.scatter_3d(x=data[labels[0]], y=data[labels[1]], z=data[labels[2]])
+        d = go.Scatter3d(x=data[fls[0]], y=data[fls[1]], z=data[fls[2]], mode='markers',
+            marker=dict(size=2))
+        fig = go.Figure(d)
+        fig.update_layout(scene=dict(xaxis_title=fls[0], yaxis_title=fls[1], zaxis_title=fls[2]))
     elif graph_id_str == SelectGraphForm.LINE:
-        fig = px.line(x=data[labels[0]], y=data[labels[1]])
-    else:
-        pass
+        fig = px.line(data_frame=df, x=fls[0], y=fls[1])
+    elif graph_id_str == SelectGraphForm.LINE_3D:
+        fig = px.line_3d(data_frame=df, x=fls[0], y=fls[1], z=fls[2])
     
     if fig:
         div = fig.to_html(full_html=False)
-
     return div

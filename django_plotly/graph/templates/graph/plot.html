@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Django-Plotly: Plot</title>
+        <title>Binary Data Graph: Plot</title>
     </head>
     <body>
 		<form action="" method="post">
@@ -17,10 +19,10 @@
             {% endfor %}
             <input type="submit" name="submit_plot" value="Plot">
 		</form>
-	
-        <h1>TEST GRAPH</h1>
+
         {% if plot_div %}
-        {{ plot_div|safe }}
+            <h3>Graph</h3>
+            {{ plot_div|safe }}
         {% endif %}
     </body>
 </html>

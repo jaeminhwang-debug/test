@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Django-Plotly: Main</title>
+        <title>Binary Data Graph</title>
     </head>
     <body>
-        <h1>Graph Web App</h1>
-        <ul>
-            <li>
-                <a href="binstruct/">Define your binary structure</a>
-            </li>
-            <li>
-                <a href="bindata/">Data</a>
-            </li>
-            <li>
-                <a href="plot/">Plot</a>
-            </li>
-        </ul>
+        <h1 class="title">Binary Data Graph</h1>
+        <h2>
+            <a class="btn" href="binstruct/">STRUCTURE</a>
+            <a class="btn" href="bindata/">DATA</a>
+            <a class="btn" href="plot/">PLOT</a>
+        </h2>
     </body>
 </html>

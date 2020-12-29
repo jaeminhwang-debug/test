@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
 <html>
     <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Django-Plotly: Data</title>
+        <title>Binary Data Graph: Data</title>
     </head>
     <body>
         <form enctype="multipart/form-data" method="post" action="">
@@ -17,7 +17,7 @@
                 <br>
 
                 <!-- Add hidden non-blank fields for validation -->
-                <span class='no_display'>
+                <span class="no_display">
                     {{ form.id }}
                 </span>
                 

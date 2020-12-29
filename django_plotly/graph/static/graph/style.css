@@ -1,3 +1,35 @@
+html {
+    font-size: 62.5%;
+}
+
 .no_display {
-    display:none;
+    display: none;
+}
+
+.title {
+    color: brown;
+    border-bottom: 1px solid #012f57;
+    padding: 0.5rem;
+    font-size: 3rem;
+}
+
+.btn {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem;
+    background-color: #f2edd7;
+    color: #755139;
+    padding: 0.5rem;
+    border-radius: 0.2rem;
+    border: none;
+    transition-property: background-color;
+    transition-duration: 0.3s;
+}
+
+.btn:hover {
+    background-color: #d2cdb7;
+}
+
+.btn:active {
+    background-color: #928d77;
 }

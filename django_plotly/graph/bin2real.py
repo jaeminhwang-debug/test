@@ -66,14 +66,15 @@ class CustomBinStruct:
         buf = f.read()
         f.close()
 
-        # Set output list
+        # Set output list(element: tuple of structure's field values)
         res = []
         count = int(len(buf) / self._unit_size)
         for i in range(0, count):
             str_buf = create_string_buffer(
                         buf[i * self._unit_size : i * self._unit_size + self._unit_size])
             st = cast(pointer(str_buf), POINTER(self._ctype)).contents
-            res.append(st)
+            tuple_of_fields = tuple(getattr(st, field[0]) for field in st._fields_)
+            res.append(tuple_of_fields)
         return res
 
     def read_bin_to_dict(self, fpath):

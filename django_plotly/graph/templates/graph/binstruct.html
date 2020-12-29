@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
 <html>
     <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Django-Plotly: Structure</title>
+        <title>Binary Data Graph: Structure</title>
     </head>
     <body>
+        <h1 class="title">Structure List</h1>
         <form method="post" action="">
             {% csrf_token %}
-            <input type="submit" name="submit_new" value="New">
-            <input type="submit" name="submit_del" value="Del">
+            <input type="button" value="HOME" onClick="location.href='/'" class="btn">
+            <input type="submit" name="submit_new" value="NEW" class="btn">
+            <input type="submit" name="submit_del" value="DEL" class="btn">
             {{ bs_fs.management_form }}
             {% for form in bs_fs %}
                 <br>
                 
                 <!-- Add hidden non-blank fields for validation -->
-                <span class='no_display'>
+                <span class="no_display">
                 {{ form.id }}
                 {{ form.label }}
                 </span>

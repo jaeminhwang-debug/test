@@ -48,11 +48,13 @@ class SelectGraphForm(forms.Form):
     SCATTER = 'id_scatter'
     SCATTER_3D = 'id_scatter_3d'
     LINE = 'id_line'
+    LINE_3D = 'id_line_3d'
     GRAPH_TYPES = [
         # (Identifier, required number), display text
         ((SCATTER, 2), 'scatter'),
         ((SCATTER_3D, 3), 'scatter 3D'),
         ((LINE, 2), 'line'),
+        ((LINE_3D, 3), 'line 3D'),
     ]
     graph = forms.ChoiceField(choices=GRAPH_TYPES,
         widget=forms.Select(attrs={'onchange': 'this.form.submit();'}))
@@ -184,7 +186,7 @@ def get_select_binfield_forms(bs, num, initials):
     bf_ids = []
     for bf in BinField.objects.filter(bs=bs):
         choices.append((bf.id, bf.label))
-    for i in range(0, num):
+    for i in range(num):
         sel_bf = SelectBinFieldForm(choices, 'Field')
         if len(initials) is num:
             sel_bf.fields['bf'].initial = initials[i]
