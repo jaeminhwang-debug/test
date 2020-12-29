@@ -4,25 +4,44 @@
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Binary Data Graph: Plot</title>
+        <title>BinGraph: Plot</title>
     </head>
     <body>
-		<form action="" method="post">
+        <h1 class="title">Plot</h1>
+        <form action="" method="post">
             {% csrf_token %}
-            {{ sel_bd }}
-            <br>
-            {{ sel_bs }}
-            {{ sel_graph }}
-            <br>
-            {% for form in sel_bf_forms %}
-                {{ form }}
-            {% endfor %}
-            <input type="submit" name="submit_plot" value="Plot">
-		</form>
-
-        {% if plot_div %}
-            <h3>Graph</h3>
-            {{ plot_div|safe }}
-        {% endif %}
+            <input type="button" class="btn" value="HOME" onClick="location.href='/'">
+            <input type="submit" class="btn" name="submit_plot" value="PLOT">
+            <table>
+                <tr>
+                    <td class="ctrl_panel" valign="top">
+                        <h2>Select</h2>
+                        <label for="{{ sel_bd.bd.auto_id }}">Select Data</label>
+                        <br>
+                        {{ sel_bd.bd }}
+                        <br><br>
+                        <label for="{{ sel_bs.bs.auto_id }}">Select Structure</label>
+                        <br>
+                        {{ sel_bs.bs }}
+                        <br><br>
+                        <label for="{{ sel_graph.graph.auto_id }}">Select Graph</label>
+                        <br>
+                        {{ sel_graph.graph }}
+                        <br><br>
+                        <label>Select Fields
+                            <br>
+                            {% for form in sel_bf_forms %}
+                                {{ form.bf }}
+                            {% endfor %}
+                        </label>
+                    </td>
+                    <td>
+                        {% if plot_div %}
+                            {{ plot_div|safe }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </form>
     </body>
 </html>

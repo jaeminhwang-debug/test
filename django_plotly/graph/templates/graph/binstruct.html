@@ -4,7 +4,7 @@
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Binary Data Graph: Structure</title>
+        <title>BinGraph: Structure</title>
     </head>
     <body>
         <h1 class="title">Structure List</h1>
@@ -19,13 +19,11 @@
                 <th class="col_name">Modified</th>
                 <th class="col_name">Del</th>
                 {% for form in bs_fs %}
-                    
-                    <!-- Add hidden non-blank fields for validation -->
                     <span class="no_display">
+                        <!-- Add hidden non-blank fields for validation -->
                         {{ form.id }}
                         {{ form.label }}
                     </span>
-
                     <tr>
                         <td>
                             <a href="{{ form.id.value }}/">{{ form.label.value }}</a>

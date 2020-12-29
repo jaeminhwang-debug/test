@@ -41,12 +41,23 @@ class BinFieldForm(forms.ModelForm):
 class FileForm(forms.Form):
     uploads = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
+    def clean(self):
+        super().clean()
+
+        # Check each file size for multiple files
+        if not self.has_error('uploads'):
+            files = self.files.getlist('uploads')
+            for f in files:
+                if f.size == 0:
+                    raise ValidationError('AAA The submitted file is empty.')
+
 class SelectBinDataForm(forms.Form):
-    bd = forms.ModelChoiceField(queryset=BinData.objects.all(), label='Data')
+    bd = forms.ModelChoiceField(queryset=BinData.objects.all(), label='Data',
+        widget=forms.Select(attrs={'class': 'sel'}))
 
 class SelectBinStructForm(forms.Form):
     bs = forms.ModelChoiceField(queryset=BinStruct.objects.all(), label='Structure',
-        widget=forms.Select(attrs={'onchange': 'this.form.submit();'}))
+        widget=forms.Select(attrs={'class': 'sel', 'onChange': 'this.form.submit();'}))
 
 class SelectGraphForm(forms.Form):
     SCATTER = 'id_scatter'
@@ -61,7 +72,7 @@ class SelectGraphForm(forms.Form):
         ((LINE_3D, 3), 'line 3D'),
     ]
     graph = forms.ChoiceField(choices=GRAPH_TYPES,
-        widget=forms.Select(attrs={'onchange': 'this.form.submit();'}))
+        widget=forms.Select(attrs={'class': 'sel', 'onChange': 'this.form.submit();'}))
 
     @classmethod
     def get_id_str(cls, graph_id):
@@ -74,7 +85,8 @@ class SelectGraphForm(forms.Form):
 class SelectBinFieldForm(forms.Form):
     def __init__(self, choices, label, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['bf'] = forms.ChoiceField(choices=choices, label=label)
+        self.fields['bf'] = forms.ChoiceField(choices=choices, label=label,
+            widget=forms.Select(attrs={'class': 'small_sel'}))
 
 def get_binstruct_formset(data=None):
     FormSetClass = forms.modelformset_factory(model=BinStruct, exclude=[], 
@@ -167,11 +179,19 @@ def delete_bindata_formset(bd_fs):
             bd = form.save(commit=False)
             bd.delete()
 
-def save_fileform(form, file_list):
+def save_fileform(form):
+    err_msgs = []
     if form.is_valid():
-        for f in file_list:
+        files = form.files.getlist('uploads')
+        for f in files:
             bd = BinData(file=f, fname=f.name)
             bd.save()
+    else:
+        for ves in form.errors.as_data().values():
+            for ve in ves:
+                for msg in ve.messages:
+                    err_msgs.append(msg)
+    return err_msgs
 
 def make_bindata_path(year, month, day, fname):
     fname = fname.replace('/', '')

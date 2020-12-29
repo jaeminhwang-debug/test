@@ -1,7 +1,7 @@
 import os
 import ast
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -20,7 +20,7 @@ def binstruct_list(request):
         elif 'submit_del' in request.POST:
             response = _delete_binstruct(request)
         else:
-            response = HttpResponse('Undefined')
+            raise Http404('Undefined')
     else:
         bs_fs = get_binstruct_formset()
         response = render(request, 'graph/binstruct.html', {'bs_fs': bs_fs})
@@ -29,18 +29,18 @@ def binstruct_list(request):
 def _delete_binstruct(request):
     bs_fs = get_binstruct_formset(request.POST)
     delete_binstruct_formset(bs_fs)
-    return HttpResponse('Del')
+    return HttpResponseRedirect(request.path_info)
 
 def binfield_list(request, bs_id=None):
     if request.method == 'POST':
         if 'submit_add' in request.POST:
             response = _append_binfield_form(request)
-        elif 'submit_delete' in request.POST:
+        elif 'submit_del' in request.POST:
             response = _delete_binfield_form(request)
         elif 'submit_save' in request.POST:
             response = _save_binfield_formset(request, bs_id)
         else:
-            response = HttpResponse('Undefined')
+            raise Http404('Undefined')
     else:
         if bs_id is not None: # Field list for the BinStruct(bs_id)
             bs = get_object_or_404(BinStruct, pk=bs_id)
@@ -69,35 +69,38 @@ def _save_binfield_formset(request, bs_id):
     bf_fs = get_binfield_formset('post', request.POST)
     saved = save_binstruct_binfield_formset(bs_form, bs_id, bf_fs)
     if saved:
-        response = HttpResponse('Saved')
+        response = redirect('binstruct_list')
     else:
-        response = HttpResponse('Invalid')
+        response = HttpResponse('Failed to save, sorry.')
     return response
 
 def bindata_list(request):
     if request.method == 'POST':
-        if 'submit_save' in request.POST:
-            response = _save_files(request)
+        if 'submit_up' in request.POST:
+            response = _upload_files(request)
         elif 'submit_del' in request.POST:
             response = _delete_files(request)
         else:
-            response = HttpResponse('Undefined')
+            raise Http404('Undefined')
     else:
         bd_fs = get_bindata_formset()
         file_form = FileForm()
         response = render(request, 'graph/bindata.html', {'bd_fs': bd_fs, 'file_form': file_form})
     return response
 
-def _save_files(request):
+def _upload_files(request):
     form = FileForm(request.POST, request.FILES)
-    file_list = request.FILES.getlist('uploads')
-    save_fileform(form, file_list)
-    return HttpResponse('Saved')
+    err_msgs = save_fileform(form)
+    if len(err_msgs) == 0:
+        response = HttpResponseRedirect(request.path_info)
+    else:
+        response = render(request, 'graph/error.html', {'msgs': err_msgs})
+    return response
 
 def _delete_files(request):
     bd_fs = get_bindata_formset(request.POST)
     delete_bindata_formset(bd_fs)
-    return HttpResponse('Del')
+    return HttpResponseRedirect(request.path_info)
 
 def bindata_download(request, y, m, d, n):
     fpath = make_bindata_path(y, m, d, n)

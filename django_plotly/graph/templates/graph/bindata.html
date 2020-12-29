@@ -4,31 +4,36 @@
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
         <meta charset="utf-8">
-        <title>Binary Data Graph: Data</title>
+        <title>BinGraph: Data</title>
     </head>
     <body>
+        <h1 class="title">Data List</h1>
         <form enctype="multipart/form-data" method="post" action="">
             {% csrf_token %}
-            <input type="submit" name="submit_save" value="Save">
-            <input type="submit" name="submit_del" value="Del">
-            {{ file_form }}
+            <input type="button" class="btn" value="HOME" onClick="location.href='/'">
+            <input type="submit" class="btn" name="submit_del" value="DEL">
+            <input type="submit" class="btn" name="submit_up" value="UPLOAD">
+            {{ file_form.uploads }}
+            <br><br>
             {{ bd_fs.management_form }}
-            {% for form in bd_fs %}
-                <br>
-
-                <!-- Add hidden non-blank fields for validation -->
-                <span class="no_display">
-                    {{ form.id }}
-                </span>
-                
-                <label>File name: </label>
-                <a href="/{{ form.file.value }}/">{{ form.fname.value }}</a>
-                <label>Uploaded: {{ form.uploaded.value|date:"Y-m-d H:i:s" }}</label>
-                {% if bd_fs.can_delete %}
-                    <label>Delete: </label>
-                    {{ form.DELETE }}
-                {% endif %}
-			{% endfor %}
+            <table>
+                <th class="col_name">File name</th>
+                <th class="col_name">Uploaded</th>
+                <th class="col_name">Del</th>
+                {% for form in bd_fs %}
+                    <span class="no_display">
+                        <!-- Add hidden non-blank fields for validation -->
+                        {{ form.id }}
+                    </span>
+                    <tr>
+                        <td>
+                            <a href="/{{ form.file.value }}/">{{ form.fname.value }}</a>
+                        </td>
+                        <td>{{ form.uploaded.value|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         </form>
     </body>
 </html>

@@ -40,3 +40,18 @@ html {
     border-bottom: 1px solid black;
     padding: 0.5em;
 }
+
+.ctrl_panel {
+    background-color: whitesmoke;
+    font-weight: bold;
+    width: 32rem;
+    padding-left: 0.8rem;
+}
+
+.sel {
+    width: 30rem;
+}
+
+.small_sel {
+    width: 8rem;
+}

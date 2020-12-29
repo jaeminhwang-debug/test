@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'graph/style.css' %}">
+        <meta charset="utf-8">
+        <title>BinGraph: Error</title>
+    </head>
+    <body>
+        <h1 class="title">Error</h1>
+        <input type="button" class="btn" value="HOME" onClick="location.href='/'">
+        <input type="button" class="btn" value="&#17" onClick="location.href='.'">
+        <br><br>
+        {% for msg in msgs %}
+            {{ msg }}
+        {% endfor %}
+    </body>
+</html>
