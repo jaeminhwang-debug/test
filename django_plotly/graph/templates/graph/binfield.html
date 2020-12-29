@@ -7,12 +7,18 @@
         <title>Binary Data Graph: Field</title>
     </head>
     <body>
+        <h1 class="title">Structure Field List</h1>
         <form id="main_form" method="post" action="">
             {% csrf_token %}
-            <input type="submit" name="submit_add" value="Add">
-            <input type="submit" name="submit_save" value="Save">
-            <br>
+            <input type="button" class="btn" value="HOME" onClick="location.href='/'">
+            <input type="button" class="btn" value="&#17" onClick="location.href='../'">
+            <input type="submit" class="btn" name="submit_add" value="ADD">
+            <input type="submit" class="btn" name="submit_save" value="SAVE">
+            <br><br>
+            
+            <label style="margin: 2rem;">Structure name: </label>
             {{ bs_form.label }}
+
             {{ bf_fs.management_form }}
             <ol>
                 {% for form in bf_fs %}

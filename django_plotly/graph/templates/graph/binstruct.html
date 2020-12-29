@@ -10,27 +10,31 @@
         <h1 class="title">Structure List</h1>
         <form method="post" action="">
             {% csrf_token %}
-            <input type="button" value="HOME" onClick="location.href='/'" class="btn">
-            <input type="submit" name="submit_new" value="NEW" class="btn">
-            <input type="submit" name="submit_del" value="DEL" class="btn">
+            <input type="button" class="btn" value="HOME" onClick="location.href='/'">
+            <input type="submit" class="btn" name="submit_new" value="NEW">
+            <input type="submit" class="btn" name="submit_del" value="DEL">
             {{ bs_fs.management_form }}
-            {% for form in bs_fs %}
-                <br>
-                
-                <!-- Add hidden non-blank fields for validation -->
-                <span class="no_display">
-                {{ form.id }}
-                {{ form.label }}
-                </span>
-                
-                <label>Structure name: </label>
-                <a href="{{ form.id.value }}/field/">{{ form.label.value }}</a>
-                <label>Modified: {{ form.modified.value|date:"Y-m-d H:i:s" }}</label>
-                {% if bs_fs.can_delete %}
-                    <label>Delete: </label>
-                    {{ form.DELETE }}
-                {% endif %}
-			{% endfor %}
+            <table>
+                <th class="col_name">Structure name</th>
+                <th class="col_name">Modified</th>
+                <th class="col_name">Del</th>
+                {% for form in bs_fs %}
+                    
+                    <!-- Add hidden non-blank fields for validation -->
+                    <span class="no_display">
+                        {{ form.id }}
+                        {{ form.label }}
+                    </span>
+
+                    <tr>
+                        <td>
+                            <a href="{{ form.id.value }}/">{{ form.label.value }}</a>
+                        </td>
+                        <td>{{ form.modified.value|date:"Y-m-d H:i:s" }}</td>
+                        <td align="center">{{ form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         </form>
     </body>
 </html>

@@ -12,7 +12,9 @@ class BinStructForm(forms.ModelForm):
         if bs_id is not None: # UPDATE
             bs = BinStruct.objects.get(id=bs_id)
             bs.label = self.cleaned_data['label']
-            obj = bs.save(commit=commit)
+            if commit:
+                bs.save()
+            obj = bs
         else: # INSERT
             obj = super().save(commit=commit)
         return obj
@@ -29,7 +31,9 @@ class BinFieldForm(forms.ModelForm):
         if bf is not None: # UPDATE
             bf.label = self.cleaned_data['label']
             bf.bits = self.cleaned_data['bits']
-            obj = bf.save(commit=commit)
+            if commit:
+                bf.save()
+            obj = bf
         else: # INSERT
             obj = super().save(commit=commit)
         return obj

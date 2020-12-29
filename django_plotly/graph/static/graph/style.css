@@ -33,3 +33,10 @@ html {
 .btn:active {
     background-color: #928d77;
 }
+
+.col_name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 1px solid black;
+    padding: 0.5em;
+}
