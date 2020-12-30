@@ -88,6 +88,20 @@ class SelectBinFieldForm(forms.Form):
         self.fields['bf'] = forms.ChoiceField(choices=choices, label=label,
             widget=forms.Select(attrs={'class': 'small_sel'}))
 
+class GraphOption(forms.Form):
+    width = forms.DecimalField(min_value=10, initial=1024,
+        widget=forms.NumberInput(attrs={'class': 'small_sel'}))
+    height = forms.DecimalField(min_value=10, initial=512,
+        widget=forms.NumberInput(attrs={'class': 'small_sel'}))
+
+    def __str__(self):
+        return str(self.fields.get('width')) + ', ' + str(self.fields.get('height'))
+
+    def get(self, label):
+        if not hasattr(self, 'cleaned_data'):
+            self.full_clean()
+        return self.cleaned_data.get(label)
+
 def get_binstruct_formset(data=None):
     FormSetClass = forms.modelformset_factory(model=BinStruct, exclude=[], 
         can_delete=True, extra=0)
@@ -105,7 +119,8 @@ def get_binfield_formset(srctype='', src=None):
         queryset=BinField.objects.filter(bs__id=src)
     elif srctype == 'formset_append': # Get formset with an extra form
         bf_fs = src
-        bf_fs.full_clean() # To access to form.cleaned_data
+        if not hasattr(bf_fs, 'cleaned_data'):
+            bf_fs.full_clean()
         values = []
         for form in bf_fs:
             label = form.cleaned_data.get('label', '') # Permit empty label 
@@ -116,7 +131,8 @@ def get_binfield_formset(srctype='', src=None):
         extra = len(values) + 1
     elif srctype == 'formset_delete': # Get formset after deleting a form
         bf_fs = src
-        bf_fs.full_clean() # To access to form.cleaned_data
+        if not hasattr(bf_fs, 'cleaned_data'):
+            bf_fs.full_clean()
         values = []
         for form in bf_fs:
             if 'delete' not in form.changed_data:
@@ -161,7 +177,8 @@ def save_binstruct_binfield_formset(bs_form, bs_id, bf_fs):
     return valid
 
 def delete_binstruct_formset(bs_fs):
-    bs_fs.full_clean() # To access to form.cleaned_data
+    if not hasattr(bs_fs, 'cleaned_data'):
+        bs_fs.full_clean()
     for form in bs_fs:
         if form.cleaned_data.get('DELETE'):
             bs = form.save(commit=False)
@@ -173,7 +190,8 @@ def get_bindata_formset(data=None):
     return FormSetClass(data=data)
 
 def delete_bindata_formset(bd_fs):
-    bd_fs.full_clean() # To access to form.cleaned_data
+    if not hasattr(bd_fs, 'cleaned_data'):
+        bd_fs.full_clean()
     for form in bd_fs:
         if form.cleaned_data.get('DELETE'):
             bd = form.save(commit=False)

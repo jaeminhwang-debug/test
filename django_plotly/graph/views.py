@@ -71,7 +71,7 @@ def _save_binfield_formset(request, bs_id):
     if saved:
         response = redirect('binstruct_list')
     else:
-        response = HttpResponse('Failed to save, sorry.')
+        response = response = render(request, 'graph/error.html', {'msgs': ['Failed to save.']})
     return response
 
 def bindata_list(request):
@@ -109,7 +109,7 @@ def bindata_download(request, y, m, d, n):
             response = HttpResponse(f.read())
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(fpath)
     else:
-        response = HttpResponse('File does not exist')
+        response = render(request, 'graph/error.html', {'msgs': ['File does not exist.']})
     return response
 
 def plot(request):
@@ -117,12 +117,14 @@ def plot(request):
     sel_bs = None
     sel_graph = None
     sel_bf_forms = None
+    graph_opt = None
     plot_div = None
 
     if request.method == 'POST':
         sel_bd = SelectBinDataForm(request.POST)
         sel_bs = SelectBinStructForm(request.POST)
         sel_graph = SelectGraphForm(request.POST)
+        graph_opt = GraphOption(request.POST)
         if sel_bs.is_valid() and sel_graph.is_valid():
             bs = sel_bs.cleaned_data.get('bs')
             graph_id = ast.literal_eval(sel_graph.cleaned_data.get('graph'))
@@ -134,19 +136,22 @@ def plot(request):
                     bs,
                     SelectGraphForm.get_id_str(graph_id),
                     sel_bf_ids,
-                    get_bindata_path(sel_bd.cleaned_data.get('bd')))
+                    get_bindata_path(sel_bd.cleaned_data.get('bd')),
+                    graph_opt)
     else:
         sel_bd = SelectBinDataForm()
         sel_bs = SelectBinStructForm()
         sel_graph = SelectGraphForm()
+        graph_opt = GraphOption()
         
     response = render(request, 'graph/plot.html', 
         {'sel_bd': sel_bd, 'sel_bs': sel_bs, 
-         'sel_graph': sel_graph, 'sel_bf_forms': sel_bf_forms, 'plot_div': plot_div})
+         'sel_graph': sel_graph, 'sel_bf_forms': sel_bf_forms, 'plot_div': plot_div,
+         'graph_opt': graph_opt})
 
     return response
 
-def get_plotly_html(bs, graph_id_str, bf_ids, fpath):
+def get_plotly_html(bs, graph_id_str, bf_ids, fpath, graph_opt):
     div = None
 
     # Make binary structure from the selected BinStruct
@@ -180,5 +185,6 @@ def get_plotly_html(bs, graph_id_str, bf_ids, fpath):
         fig = px.line_3d(data_frame=df, x=fls[0], y=fls[1], z=fls[2])
     
     if fig:
+        fig.update_layout(width=graph_opt.get('width'), height=graph_opt.get('height'))
         div = fig.to_html(full_html=False)
     return div

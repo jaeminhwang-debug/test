@@ -11,8 +11,8 @@
         <form method="post" action="">
             {% csrf_token %}
             <input type="button" class="btn" value="HOME" onClick="location.href='/'">
-            <input type="submit" class="btn" name="submit_new" value="NEW">
             <input type="submit" class="btn" name="submit_del" value="DEL">
+            <input type="submit" class="btn" name="submit_new" value="NEW">
             {{ bs_fs.management_form }}
             <table>
                 <th class="col_name">Structure name</th>

@@ -13,6 +13,11 @@ html {
     font-size: 3rem;
 }
 
+.sub_title {
+    border-bottom: 1px solid #012f57;
+    padding-bottom: 0.5rem;
+}
+
 .btn {
     text-decoration: none;
     font-weight: bold;
@@ -44,14 +49,14 @@ html {
 .ctrl_panel {
     background-color: whitesmoke;
     font-weight: bold;
-    width: 32rem;
+    width: 28rem;
     padding-left: 0.8rem;
 }
 
 .sel {
-    width: 30rem;
+    width: 24rem;
 }
 
 .small_sel {
-    width: 8rem;
+    width: 7.5rem;
 }
